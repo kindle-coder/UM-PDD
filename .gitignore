@@ -1,0 +1,11 @@
+# Pycharm Directory
+.idea
+
+# Python cache
+__pycache__
+
+# The dataset, should be downloaded separately
+dataset
+
+# Checkpoints
+checkpoints
