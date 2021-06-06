@@ -6,6 +6,8 @@ __pycache__
 
 # The dataset, should be downloaded separately
 dataset
+dataset/*
 
 # Checkpoints
 checkpoints
+checkpoints/*

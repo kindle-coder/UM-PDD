@@ -42,17 +42,3 @@ def create_generator_model(noise_vector_length):
     return model
 
 
-def create_discriminator_model(input_shape):
-    model = tf.keras.Sequential()
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=input_shape))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
-
-    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
-
-    model.add(layers.Flatten())
-    model.add(layers.Dense(1))
-
-    return model
