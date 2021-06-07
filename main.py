@@ -48,7 +48,9 @@ if environment == Environment.GoogleColab:
 
 if accelerator == Accelerator.TPU:
     batch_size = 256
-
+else:
+    options = tf.data.Options()
+    options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
 
 unsupervised_ds, supervised_ds, test_ds = get_plant_diseases_dataset(batch_size, supervised_samples_ratio)
 
@@ -65,7 +67,9 @@ with strategy.scope():
           classifier=classifier_model,
           gan=gan_model,
           batch_size=batch_size,
-          unsupervised_ds=unsupervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
-          supervised_ds=supervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
+          unsupervised_ds=unsupervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(
+              prefetch_no),
+          supervised_ds=supervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(
+              prefetch_no),
           epochs=epochs,
           latent_dim=latent_dim)
