@@ -11,10 +11,6 @@ from Utils.fake_samples import generate_fake_samples, generate_latent_points
 profiling = False
 
 result_path = './results/'
-tensorboard_path = result_path + 'tensorboard/'
-checkpoints_path = result_path + 'checkpoints/'
-generator_samples_path = result_path + 'generator_samples/'
-classifier_performance_path =  result_path + 'classifier_performance/'
 
 
 def train(generator,
@@ -29,6 +25,11 @@ def train(generator,
           supervised_batches_per_iteration=1,
           unsupervised_batches_per_iteration=1,
           ):
+    
+    tensorboard_path = result_path + 'tensorboard/'
+    checkpoints_path = result_path + 'checkpoints/'
+    generator_samples_path = result_path + 'generator_samples/'
+    classifier_performance_path = result_path + 'classifier_performance/'
 
     if not os.path.exists(result_path):
         os.makedirs(result_path)

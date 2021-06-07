@@ -5,13 +5,14 @@ import requests
 import tensorflow as tf
 
 dataset_path = './dataset/'
-training_path = dataset_path + "train/"
-validation_path = dataset_path + "valid/"
 
 image_size = 256
 
 
 def get_plant_diseases_dataset(batch_size, supervised_samples_ratio):
+    training_path = dataset_path + "train/"
+    validation_path = dataset_path + "valid/"
+
     unsupervised_ds = tf.keras.preprocessing.image_dataset_from_directory(
         training_path,
         validation_split=supervised_samples_ratio,
