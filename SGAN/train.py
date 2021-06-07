@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow import ones
 from tqdm import tqdm
 
-from Utils.fake_samples import generate_fake_samples, generate_latent_points
+from Utils.fake_samples import generate_fake_samples, generate_latent_points, save_generated_images
 
 profiling = False
 
@@ -24,12 +24,11 @@ def start_training(generator,
                    latent_dim,
                    batch_size,
                    supervised_batches_per_iteration=1,
-                   unsupervised_batches_per_iteration=1,
+                   unsupervised_batches_per_iteration=5,
                    ):
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
     generator_samples_path = result_path + 'generator_samples/'
-    classifier_performance_path = result_path + 'classifier_performance/'
 
     if not os.path.exists(result_path):
         os.makedirs(result_path)
@@ -41,6 +40,12 @@ def start_training(generator,
 
     if not os.path.exists(tensorboard_path):
         os.makedirs(tensorboard_path)
+
+    if not os.path.exists(checkpoints_path):
+        os.makedirs(checkpoints_path)
+
+    if not os.path.exists(generator_samples_path):
+        os.makedirs(generator_samples_path)
 
     batch_per_epoch = unsupervised_ds.cardinality()
 
@@ -82,7 +87,7 @@ def start_training(generator,
 
             if (i != 0 or j != 0) and (i * steps + j) % 17 == 0:
                 # Test the classifier performance
-                test_loss, test_acc = classifier.evaluate(test_ds)
+                test_loss, test_acc = classifier.evaluate(test_ds.take(10))
                 with test_summary_writer.as_default(step=i * steps + j):
                     tf.summary.scalar('classifier_loss', test_loss)
                     tf.summary.scalar('classifier_acc', test_acc)
@@ -94,13 +99,15 @@ def start_training(generator,
                     tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
                     tf.summary.scalar('gan_loss', gan_loss)
 
+                save_generated_images(path=generator_samples_path,
+                                      generator=generator,
+                                      latent_dim=latent_dim,
+                                      step=i * steps + j,
+                                      no_of_samples=25)
+
         if profiling:
             tf.profiler.experimental.stop()
 
-        # Save Training States
+        # TODO Save Training States
 
-        # Save Checkpoints
-
-        # Check Classifier Performance
-
-        # Save Generator Images
+        # TODO Save Checkpoints

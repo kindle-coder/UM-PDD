@@ -11,7 +11,7 @@ from tensorflow.keras.layers import Lambda
 from tensorflow.keras.layers import Activation
 from tensorflow.python.keras import backend
 
-learning_rate = 0.00001
+learning_rate = 0.00002
 
 
 # Source: https://arxiv.org/abs/1606.03498
@@ -50,6 +50,6 @@ def create_discriminator_models(input_shape, no_of_classes):
     discriminator_output_layer = Lambda(unsupervised_activation)(middle_layer)
     # define and compile unsupervised discriminator model
     discriminator_model = Model(input_layer, discriminator_output_layer)
-    discriminator_model.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate, beta_1=0.5))
+    discriminator_model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=learning_rate, beta_1=0.5))
 
     return discriminator_model, classifier_model

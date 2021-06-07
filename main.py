@@ -24,7 +24,7 @@ accelerator = Accelerator.GPU
 batch_size = 32
 latent_dim = 100
 epochs = 1
-supervised_samples_ratio = 0.01
+supervised_samples_ratio = 0.05
 prefetch_no = tf.data.AUTOTUNE
 
 # Parsing Arguments
@@ -64,7 +64,7 @@ print(environment)
 print(accelerator)
 print("Batch Size: ", batch_size)
 print("Epochs: ", epochs)
-print("Supervised Sample Ratio: ", supervised_samples_ratio)
+print("Supervised Ratio: ", supervised_samples_ratio)
 
 
 # Configuring TensorFlow
@@ -95,9 +95,6 @@ if environment == Environment.GoogleColab:
 
 if accelerator == Accelerator.TPU:
     batch_size = 256
-else:
-    options = tf.data.Options()
-    options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
 
 unsupervised_ds, supervised_ds, test_ds = get_plant_diseases_dataset(batch_size, supervised_samples_ratio)
 
@@ -122,9 +119,11 @@ with strategy.scope():
                                      num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    test_ds=
                    test_ds.map(normalize_image,
-                                     num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
+                               num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    epochs=epochs,
-                   latent_dim=latent_dim)
+                   latent_dim=latent_dim,
+                   supervised_batches_per_iteration=1,
+                   unsupervised_batches_per_iteration=1)
 
 
 
