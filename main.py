@@ -1,3 +1,6 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import multiprocessing
 
 import tensorflow as tf
@@ -15,8 +18,8 @@ from Utils.enums import User, Environment, Accelerator
 
 # configuration
 user = User.Arash
-environment = Environment.GoogleColab
-accelerator = Accelerator.GPU
+environment = Environment.Local
+accelerator = Accelerator.TPU
 
 batch_size = 32
 latent_dim = 100
@@ -67,11 +70,11 @@ with strategy.scope():
                    classifier=classifier_model,
                    gan=gan_model,
                    batch_size=batch_size,
-                   unsupervised_ds=unsupervised_ds.map(normalize_image,
-                                                       num_parallel_calls=multiprocessing.cpu_count()).prefetch(
-                       prefetch_no),
-                   supervised_ds=supervised_ds.map(normalize_image,
-                                                   num_parallel_calls=multiprocessing.cpu_count()).prefetch(
-                       prefetch_no),
+                   unsupervised_ds=
+                   unsupervised_ds.map(normalize_image,
+                                       num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
+                   supervised_ds=
+                   supervised_ds.map(normalize_image,
+                                     num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    epochs=epochs,
                    latent_dim=latent_dim)

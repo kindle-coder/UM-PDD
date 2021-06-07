@@ -25,6 +25,7 @@ def start_training(generator,
                    supervised_batches_per_iteration=1,
                    unsupervised_batches_per_iteration=1,
                    ):
+
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
     generator_samples_path = result_path + 'generator_samples/'
