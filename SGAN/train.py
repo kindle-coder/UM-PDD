@@ -103,7 +103,7 @@ def start_training(generator,
                                       generator=generator,
                                       latent_dim=latent_dim,
                                       step=i * steps + j,
-                                      no_of_samples=25)
+                                      no_of_samples=9)
 
         if profiling:
             tf.profiler.experimental.stop()

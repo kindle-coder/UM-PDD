@@ -50,7 +50,7 @@ def create_discriminator_models(input_shape, no_of_classes):
     classification_output_layer = Activation('softmax')(middle_layer)
     classifier_model = Model(input_layer, classification_output_layer)
     classifier_model.compile(loss='sparse_categorical_crossentropy',
-                             optimizer=Adam(lr=learning_rate, beta_1=0.5), metrics=['accuracy'])
+                             optimizer=Adam(learning_rate=learning_rate, beta_1=0.5), metrics=['accuracy'])
 
     # Unsupervised Mode
     discriminator_output_layer = Lambda(unsupervised_activation)(middle_layer)

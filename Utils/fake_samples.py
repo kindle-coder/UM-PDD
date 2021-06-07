@@ -35,9 +35,9 @@ def save_generated_images(path, generator, latent_dim, no_of_samples, step):
     fig = pyplot.gcf()
     fig.set_size_inches(18.5*4, 10.5*4)
 
-    for i in range(25):
+    for i in range(9):
         # define subplot
-        pyplot.subplot(5, 5, i + 1)
+        pyplot.subplot(3, 3, i + 1)
         # turn off axis
         pyplot.axis('off')
         # plot raw pixel data
