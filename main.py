@@ -18,7 +18,7 @@ from Utils.enums import User, Environment, Accelerator
 
 # configuration
 user = User.Arash
-environment = Environment.Local
+environment = Environment.GoogleColab
 accelerator = Accelerator.TPU
 
 batch_size = 32
