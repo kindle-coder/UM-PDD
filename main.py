@@ -125,7 +125,8 @@ with strategy.scope():
                    epochs=epochs,
                    latent_dim=latent_dim,
                    supervised_batches_per_iteration=1,
-                   unsupervised_batches_per_iteration=19)
+                   unsupervised_batches_per_iteration=19,
+                   save_interval=1)
 
 
 
