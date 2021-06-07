@@ -4,12 +4,20 @@ import shutil
 import requests
 import tensorflow as tf
 
+from Utils.enums import Accelerator
+from main import accelerator
+
 dataset_path = './dataset/'
 
 image_size = 256
 
 
 def get_plant_diseases_dataset(batch_size, supervised_samples_ratio):
+
+    if not accelerator == Accelerator.TPU:
+        options = tf.data.Options()
+        options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
+
     training_path = dataset_path + "train/"
     validation_path = dataset_path + "valid/"
 

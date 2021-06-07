@@ -16,7 +16,7 @@ from Utils.enums import User, Environment, Accelerator
 # configuration
 user = User.Arash
 environment = Environment.GoogleColab
-accelerator = Accelerator.TPU
+accelerator = Accelerator.GPU
 
 batch_size = 32
 latent_dim = 100
