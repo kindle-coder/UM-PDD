@@ -21,7 +21,7 @@ user = User.Arash
 environment = Environment.GoogleColab
 accelerator = Accelerator.GPU
 
-batch_size = 32
+batch_size = 16
 latent_dim = 100
 epochs = 10
 supervised_samples_ratio = 0.05
@@ -106,6 +106,8 @@ with strategy.scope():
     discriminator_model, classifier_model = create_discriminator_models(input_shape, no_of_classes)
     gan_model = create_gan_model(generator_model, discriminator_model)
 
+    classifier_model.summary()
+
     start_training(generator=generator_model,
                    discriminator=discriminator_model,
                    classifier=classifier_model,
@@ -123,7 +125,7 @@ with strategy.scope():
                    epochs=epochs,
                    latent_dim=latent_dim,
                    supervised_batches_per_iteration=1,
-                   unsupervised_batches_per_iteration=1)
+                   unsupervised_batches_per_iteration=19)
 
 
 

@@ -25,6 +25,7 @@ def start_training(generator,
                    batch_size,
                    supervised_batches_per_iteration=1,
                    unsupervised_batches_per_iteration=5,
+                   save_interval=17
                    ):
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
@@ -85,7 +86,7 @@ def start_training(generator,
             gan_labels = ones(batch_size)
             gan_loss = gan.train_on_batch(gan_input, gan_labels)
 
-            if (i != 0 or j != 0) and (i * steps + j) % 17 == 0:
+            if (i != 0 or j != 0) and (i * steps + j) % save_interval == 0:
                 # Test the classifier performance
                 test_loss, test_acc = classifier.evaluate(test_ds.take(10))
                 with test_summary_writer.as_default(step=i * steps + j):
