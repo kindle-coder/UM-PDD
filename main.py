@@ -1,5 +1,5 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 import multiprocessing
 
@@ -18,7 +18,7 @@ from Utils.enums import User, Environment, Accelerator
 
 # configuration
 user = User.Arash
-environment = Environment.GoogleColab
+environment = Environment.Local
 accelerator = Accelerator.TPU
 
 batch_size = 32
@@ -32,6 +32,9 @@ configure(enable_mixed_float16=False,
           enable_eager_execution=True)
 
 strategy = tf.distribute.get_strategy()
+
+if environment == Environment.Local:
+    accelerator = Accelerator.GPU
 
 if accelerator == Accelerator.TPU and \
         (environment == Environment.GoogleColab or environment == Environment.GoogleResearch):
@@ -47,7 +50,7 @@ if environment == Environment.GoogleColab and accelerator == Accelerator.GPU:
 
 if environment == Environment.GoogleColab:
     datasets.dataset_path = '/content/drive/MyDrive/Share/UM-PDD/dataset/'
-    train.result_path = '/content/drive/MyDrive/Share/UM-PDD/result/'
+    train.result_path = '/content/drive/MyDrive/Share/UM-PDD/results/'
 
 if accelerator == Accelerator.TPU:
     batch_size = 256
