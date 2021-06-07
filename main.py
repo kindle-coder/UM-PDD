@@ -2,7 +2,7 @@
 import os
 import sys
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import multiprocessing
 
@@ -60,6 +60,14 @@ for arg in sys.argv:
     if arg.lower().__contains__("sample_ratio"):
         param = arg[arg.index("=") + 1:]
         supervised_samples_ratio = float(param)
+
+print(user)
+print(environment)
+print(accelerator)
+print("Batch Size: ", batch_size)
+print("Epochs: ", epochs)
+print("Supervised Sample Ratio: ", supervised_samples_ratio)
+
 
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
