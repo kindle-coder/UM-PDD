@@ -39,6 +39,9 @@ def start_training(generator,
             shutil.rmtree(result_path_old)
         os.rename(result_path, result_path_old)
 
+    if not os.path.exists(tensorboard_path):
+        os.makedirs(tensorboard_path)
+
     batch_per_epoch = unsupervised_ds.cardinality()
 
     steps = int(batch_per_epoch / unsupervised_batches_per_iteration)
