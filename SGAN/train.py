@@ -25,7 +25,7 @@ def train(generator,
           supervised_batches_per_iteration=1,
           unsupervised_batches_per_iteration=1,
           ):
-    
+
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
     generator_samples_path = result_path + 'generator_samples/'
@@ -84,6 +84,9 @@ def train(generator,
                 tf.summary.scalar('discriminator_real_loss', discriminator_real_loss)
                 tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
                 tf.summary.scalar('gan_loss', gan_loss)
+
+            if (i*steps+j) % 25 == 0:
+                train_summary_writer.flush()
 
         if profiling:
             tf.profiler.experimental.stop()
