@@ -26,12 +26,14 @@ def generate_fake_samples(generator, latent_dim, no_of_samples):
 def save_generated_images(path, generator, latent_dim, no_of_samples, step):
     images, _ = generate_fake_samples(generator, latent_dim, no_of_samples)
     images = images.astype(np.float32)
-    images = (images + 1) / 2.0
-    images = images / images.max()
+    images_min = np.amin(images)
+    images = images - images_min
+    images_max = np.amax(images)
+    images = images / images_max
     images = (images * 255).astype('int')
 
     fig = pyplot.gcf()
-    fig.set_size_inches(18.5*5, 10.5*5)
+    fig.set_size_inches(18.5*4, 10.5*4)
 
     for i in range(25):
         # define subplot

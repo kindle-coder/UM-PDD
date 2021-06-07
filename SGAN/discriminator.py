@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
@@ -10,6 +11,7 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Lambda
 from tensorflow.keras.layers import Activation
 from tensorflow.python.keras import backend
+from tensorflow.keras.layers import BatchNormalization
 
 learning_rate = 0.00002
 
@@ -24,17 +26,21 @@ def unsupervised_activation(output):
 def create_discriminator_models(input_shape, no_of_classes):
     input_layer = Input(shape=input_shape)
 
-    middle_layer = Conv2D(256, (3, 3), strides=(2, 2), padding='same')(input_layer)
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(input_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = Conv2D(256, (3, 3), strides=(2, 2), padding='same')(middle_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = BatchNormalization()(middle_layer)
+
+    middle_layer = Conv2D(512, (3, 3), strides=(2, 2), padding='same')(middle_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = Conv2D(1024, (3, 3), strides=(2, 2), padding='same')(middle_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
+
+    middle_layer = BatchNormalization()(middle_layer)
 
     middle_layer = Flatten()(middle_layer)
     middle_layer = Dropout(0.4)(middle_layer)

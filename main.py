@@ -23,7 +23,7 @@ accelerator = Accelerator.GPU
 
 batch_size = 32
 latent_dim = 100
-epochs = 1
+epochs = 10
 supervised_samples_ratio = 0.05
 prefetch_no = tf.data.AUTOTUNE
 
