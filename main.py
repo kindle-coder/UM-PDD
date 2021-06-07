@@ -7,6 +7,7 @@ from SGAN.gan import create_gan_model
 from SGAN.generator import create_generator_model
 from SGAN.train import train
 from Utils import datasets
+from SGAN import train
 from configs import configure
 from Utils.datasets import get_plant_diseases_dataset, normalize_image
 
@@ -15,7 +16,7 @@ from Utils.enums import User, Environment, Accelerator
 # configuration
 user = User.Arash
 environment = Environment.GoogleColab
-accelerator = Accelerator.TPU
+accelerator = Accelerator.GPU
 
 batch_size = 32
 latent_dim = 100
