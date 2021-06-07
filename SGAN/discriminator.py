@@ -11,6 +11,8 @@ from tensorflow.keras.layers import Lambda
 from tensorflow.keras.layers import Activation
 from tensorflow.python.keras import backend
 
+learning_rate = 0.00001
+
 
 # Source: https://arxiv.org/abs/1606.03498
 def unsupervised_activation(output):
@@ -22,13 +24,7 @@ def unsupervised_activation(output):
 def create_discriminator_models(input_shape, no_of_classes):
     input_layer = Input(shape=input_shape)
 
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(input_layer)
-    middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
-
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
-    middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
-
-    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = Conv2D(256, (3, 3), strides=(2, 2), padding='same')(input_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
     middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
@@ -48,12 +44,12 @@ def create_discriminator_models(input_shape, no_of_classes):
     classification_output_layer = Activation('softmax')(middle_layer)
     classifier_model = Model(input_layer, classification_output_layer)
     classifier_model.compile(loss='sparse_categorical_crossentropy',
-                             optimizer=Adam(lr=0.0002, beta_1=0.5), metrics=['accuracy'])
+                             optimizer=Adam(lr=learning_rate, beta_1=0.5), metrics=['accuracy'])
 
     # Unsupervised Mode
     discriminator_output_layer = Lambda(unsupervised_activation)(middle_layer)
     # define and compile unsupervised discriminator model
     discriminator_model = Model(input_layer, discriminator_output_layer)
-    discriminator_model.compile(loss='binary_crossentropy', optimizer=Adam(lr=0.0002, beta_1=0.5))
+    discriminator_model.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate, beta_1=0.5))
 
     return discriminator_model, classifier_model

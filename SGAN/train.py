@@ -19,13 +19,13 @@ def start_training(generator,
                    gan,
                    unsupervised_ds,
                    supervised_ds,
+                   test_ds,
                    epochs,
                    latent_dim,
                    batch_size,
                    supervised_batches_per_iteration=1,
                    unsupervised_batches_per_iteration=1,
                    ):
-
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
     generator_samples_path = result_path + 'generator_samples/'
@@ -46,7 +46,8 @@ def start_training(generator,
 
     steps = int(batch_per_epoch / unsupervised_batches_per_iteration)
 
-    train_summary_writer = tf.summary.create_file_writer(tensorboard_path)
+    train_summary_writer = tf.summary.create_file_writer(tensorboard_path + "train/")
+    test_summary_writer = tf.summary.create_file_writer(tensorboard_path + "test/")
 
     classifier_loss = 0.0
     classifier_acc = 0.0
@@ -55,7 +56,7 @@ def start_training(generator,
 
     for i in range(epochs):
         if profiling:
-            tf.profiler.experimental.start('./tensorboard/')
+            tf.profiler.experimental.start(tensorboard_path)
 
         for j in tqdm(range(steps), desc='Epoch-{:02d}'.format(i + 1), ncols=80):
             # update supervised discriminator
@@ -64,7 +65,6 @@ def start_training(generator,
                 classifier_loss, classifier_acc = classifier.train_on_batch(image_batch[0], image_batch[1])
 
             # update unsupervised discriminator
-            discriminator.trainable = True
             unsupervised_subset = unsupervised_ds.take(unsupervised_batches_per_iteration)
             for image_batch in unsupervised_subset:
                 no_of_samples = len(image_batch[0])
@@ -76,20 +76,23 @@ def start_training(generator,
                 discriminator_fake_loss = discriminator.train_on_batch(images_fake, labels_fake)
 
             # update generator
-            discriminator.trainable = False
             gan_input = generate_latent_points(latent_dim, batch_size)
             gan_labels = ones(batch_size)
             gan_loss = gan.train_on_batch(gan_input, gan_labels)
 
-            with train_summary_writer.as_default(step=i * steps + j):
-                tf.summary.scalar('classifier_loss', classifier_loss)
-                tf.summary.scalar('classifier_acc', classifier_acc)
-                tf.summary.scalar('discriminator_real_loss', discriminator_real_loss)
-                tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
-                tf.summary.scalar('gan_loss', gan_loss)
+            if (i != 0 or j != 0) and (i * steps + j) % 17 == 0:
+                # Test the classifier performance
+                test_loss, test_acc = classifier.evaluate(test_ds)
+                with test_summary_writer.as_default(step=i * steps + j):
+                    tf.summary.scalar('classifier_loss', test_loss)
+                    tf.summary.scalar('classifier_acc', test_acc)
 
-            if (i * steps + j) % 25 == 0:
-                train_summary_writer.flush()
+                with train_summary_writer.as_default(step=i * steps + j):
+                    tf.summary.scalar('classifier_loss', classifier_loss)
+                    tf.summary.scalar('classifier_acc', classifier_acc)
+                    tf.summary.scalar('discriminator_real_loss', discriminator_real_loss)
+                    tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
+                    tf.summary.scalar('gan_loss', gan_loss)
 
         if profiling:
             tf.profiler.experimental.stop()

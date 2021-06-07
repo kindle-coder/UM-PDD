@@ -23,7 +23,7 @@ accelerator = Accelerator.GPU
 
 batch_size = 32
 latent_dim = 100
-epochs = 10
+epochs = 1
 supervised_samples_ratio = 0.01
 prefetch_no = tf.data.AUTOTUNE
 
@@ -119,6 +119,9 @@ with strategy.scope():
                                        num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    supervised_ds=
                    supervised_ds.map(normalize_image,
+                                     num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
+                   test_ds=
+                   test_ds.map(normalize_image,
                                      num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    epochs=epochs,
                    latent_dim=latent_dim)
