@@ -20,9 +20,9 @@ def get_plant_diseases_dataset(batch_size, supervised_samples_ratio):
 
     supervised_ds = tf.keras.preprocessing.image_dataset_from_directory(
         training_path,
-        validation_split=(1 - supervised_samples_ratio),
-        subset="training",
-        seed=14323,
+        validation_split=supervised_samples_ratio,
+        subset="validation",
+        seed=5584,
         image_size=(image_size, image_size),
         batch_size=batch_size)
 

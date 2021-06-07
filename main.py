@@ -1,4 +1,7 @@
+#!
 import os
+import sys
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import multiprocessing
@@ -13,7 +16,6 @@ from Utils import datasets
 from SGAN import train
 from configs import configure
 from Utils.datasets import get_plant_diseases_dataset, normalize_image
-
 from Utils.enums import User, Environment, Accelerator
 
 # configuration
@@ -27,6 +29,39 @@ epochs = 10
 supervised_samples_ratio = 0.01
 prefetch_no = tf.data.AUTOTUNE
 
+# Parsing Arguments
+for arg in sys.argv:
+    if arg.lower().__contains__("user"):
+        param = arg[arg.index("=") + 1:]
+        if param.lower() == "arash":
+            user = User.Arash
+        elif param.lower() == "kinza":
+            user = User.Kinza
+    if arg.lower().__contains__("envi"):
+        param = arg[arg.index("=") + 1:]
+        if param.lower() == "local":
+            environment = Environment.Local
+        elif param.lower() == "colab":
+            environment = Environment.GoogleColab
+        elif param.lower() == "research":
+            environment = Environment.GoogleResearch
+    if arg.lower().__contains__("accel"):
+        param = arg[arg.index("=") + 1:]
+        if param.lower() == "gpu":
+            accelerator = Accelerator.GPU
+        elif param.lower() == "tpu":
+            accelerator = Accelerator.TPU
+    if arg.lower().__contains__("batch"):
+        param = arg[arg.index("=") + 1:]
+        batch_size = int(param)
+    if arg.lower().__contains__("epoch"):
+        param = arg[arg.index("=") + 1:]
+        epochs = int(param)
+    if arg.lower().__contains__("sample_ratio"):
+        param = arg[arg.index("=") + 1:]
+        supervised_samples_ratio = float(param)
+
+# Configuring TensorFlow
 configure(enable_mixed_float16=False,
           print_device_placement=False,
           enable_eager_execution=True)
@@ -81,3 +116,6 @@ with strategy.scope():
                                      num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
                    epochs=epochs,
                    latent_dim=latent_dim)
+
+
+
