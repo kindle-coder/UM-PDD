@@ -15,3 +15,8 @@ class Environment(Enum):
 class Engine(Enum):
     TensorFlow = 1
     PlaidML = 2
+
+
+class Accelerator(Enum):
+    GPU = 1
+    TPU = 2

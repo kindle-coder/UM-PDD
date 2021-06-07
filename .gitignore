@@ -8,6 +8,8 @@ __pycache__
 dataset
 dataset/*
 
-# Checkpoints
-checkpoints
-checkpoints/*
+# Results
+results
+results/*
+results-old
+results-old/*

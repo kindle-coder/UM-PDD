@@ -1,11 +1,20 @@
 import os
-import time
+import shutil
 
 import tensorflow as tf
-import tensorflow_datasets as tfds
-from tensorflow import zeros, ones
+
+from tensorflow import ones
+from tqdm import tqdm
 
 from Utils.fake_samples import generate_fake_samples, generate_latent_points
+
+profiling = False
+
+result_path = './results/'
+tensorboard_path = result_path + 'tensorboard/'
+checkpoints_path = result_path + 'checkpoints/'
+generator_samples_path = result_path + 'generator_samples/'
+classifier_performance_path =  result_path + 'classifier_performance/'
 
 
 def train(generator,
@@ -18,33 +27,70 @@ def train(generator,
           latent_dim,
           batch_size,
           supervised_batches_per_iteration=1,
-          unsupervised_batches_per_iteration=5,
+          unsupervised_batches_per_iteration=1,
           ):
+
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+    else:
+        result_path_old = "{0}-old".format(result_path[:-1])
+        if os.path.exists(result_path_old):
+            shutil.rmtree(result_path_old)
+        os.rename(result_path, result_path_old)
 
     batch_per_epoch = unsupervised_ds.cardinality()
 
-    steps = int(batch_per_epoch * epochs / unsupervised_batches_per_iteration)
+    steps = int(batch_per_epoch / unsupervised_batches_per_iteration)
 
-    for i in range(steps):
-        # update supervised discriminator
-        supervised_subset = supervised_ds.take(supervised_batches_per_iteration)
-        for image_batch in supervised_subset:
-            classifier_loss, classifier_acc = classifier.train_on_batch(image_batch[0], image_batch[1])
+    train_summary_writer = tf.summary.create_file_writer(tensorboard_path)
 
-        # update unsupervised discriminator
-        discriminator.trainable = True
-        unsupervised_subset = unsupervised_ds.take(unsupervised_batches_per_iteration)
-        for image_batch in unsupervised_subset:
-            no_of_samples = len(image_batch[0])
-            labels = ones(no_of_samples)
-            discriminator_real_loss = discriminator.train_on_batch(image_batch[0], labels)
+    classifier_loss = 0.0
+    classifier_acc = 0.0
+    discriminator_real_loss = 0.0
+    discriminator_fake_loss = 0.0
 
-        for _ in range(unsupervised_batches_per_iteration):
-            images_fake, labels_fake = generate_fake_samples(generator, latent_dim, batch_size)
-            discriminator_fake_loss = discriminator.train_on_batch(images_fake, labels_fake)
+    for i in range(epochs):
+        if profiling:
+            tf.profiler.experimental.start('./tensorboard/')
 
-        # update generator
-        discriminator.trainable = False
-        gan_input = generate_latent_points(latent_dim, batch_size)
-        gan_labels = ones(batch_size)
-        gan_loss = gan.train_on_batch(gan_input, gan_labels)
+        for j in tqdm(range(steps), desc='Epoch-{:02d}'.format(i + 1), ncols=80):
+            # update supervised discriminator
+            supervised_subset = supervised_ds.take(supervised_batches_per_iteration)
+            for image_batch in supervised_subset:
+                classifier_loss, classifier_acc = classifier.train_on_batch(image_batch[0], image_batch[1])
+
+            # update unsupervised discriminator
+            discriminator.trainable = True
+            unsupervised_subset = unsupervised_ds.take(unsupervised_batches_per_iteration)
+            for image_batch in unsupervised_subset:
+                no_of_samples = len(image_batch[0])
+                labels = ones(no_of_samples)
+                discriminator_real_loss = discriminator.train_on_batch(image_batch[0], labels)
+
+            for _ in range(unsupervised_batches_per_iteration):
+                images_fake, labels_fake = generate_fake_samples(generator, latent_dim, batch_size)
+                discriminator_fake_loss = discriminator.train_on_batch(images_fake, labels_fake)
+
+            # update generator
+            discriminator.trainable = False
+            gan_input = generate_latent_points(latent_dim, batch_size)
+            gan_labels = ones(batch_size)
+            gan_loss = gan.train_on_batch(gan_input, gan_labels)
+
+            with train_summary_writer.as_default(step=i*steps+j):
+                tf.summary.scalar('classifier_loss', classifier_loss)
+                tf.summary.scalar('classifier_acc', classifier_acc)
+                tf.summary.scalar('discriminator_real_loss', discriminator_real_loss)
+                tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
+                tf.summary.scalar('gan_loss', gan_loss)
+
+        if profiling:
+            tf.profiler.experimental.stop()
+
+        # Save Training States
+
+        # Save Checkpoints
+
+        # Check Classifier Performance
+
+        # Save Generator Images

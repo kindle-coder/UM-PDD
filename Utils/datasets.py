@@ -35,3 +35,6 @@ def get_plant_diseases_dataset(batch_size, supervised_samples_ratio):
 
     return unsupervised_ds, supervised_ds, test_ds
 
+
+def normalize_image(image, label):
+    return tf.cast(image, tf.float32) / 255., label

@@ -22,13 +22,22 @@ def unsupervised_activation(output):
 def create_discriminator_models(input_shape, no_of_classes):
     input_layer = Input(shape=input_shape)
 
-    middle_layer = Conv2D(64, (3, 3), strides=(2, 2), padding='same')(input_layer)
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(input_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
     middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
-    middle_layer = Conv2D(256, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
+
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
+
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
+    middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
+
+    middle_layer = Conv2D(128, (3, 3), strides=(2, 2), padding='same')(middle_layer)
     middle_layer = LeakyReLU(alpha=0.2)(middle_layer)
 
     middle_layer = Flatten()(middle_layer)
