@@ -13,19 +13,18 @@ profiling = False
 result_path = './results/'
 
 
-def train(generator,
-          discriminator,
-          classifier,
-          gan,
-          unsupervised_ds,
-          supervised_ds,
-          epochs,
-          latent_dim,
-          batch_size,
-          supervised_batches_per_iteration=1,
-          unsupervised_batches_per_iteration=1,
-          ):
-
+def start_training(generator,
+                   discriminator,
+                   classifier,
+                   gan,
+                   unsupervised_ds,
+                   supervised_ds,
+                   epochs,
+                   latent_dim,
+                   batch_size,
+                   supervised_batches_per_iteration=1,
+                   unsupervised_batches_per_iteration=1,
+                   ):
     tensorboard_path = result_path + 'tensorboard/'
     checkpoints_path = result_path + 'checkpoints/'
     generator_samples_path = result_path + 'generator_samples/'
@@ -78,14 +77,14 @@ def train(generator,
             gan_labels = ones(batch_size)
             gan_loss = gan.train_on_batch(gan_input, gan_labels)
 
-            with train_summary_writer.as_default(step=i*steps+j):
+            with train_summary_writer.as_default(step=i * steps + j):
                 tf.summary.scalar('classifier_loss', classifier_loss)
                 tf.summary.scalar('classifier_acc', classifier_acc)
                 tf.summary.scalar('discriminator_real_loss', discriminator_real_loss)
                 tf.summary.scalar('discriminator_fake_loss', discriminator_fake_loss)
                 tf.summary.scalar('gan_loss', gan_loss)
 
-            if (i*steps+j) % 25 == 0:
+            if (i * steps + j) % 25 == 0:
                 train_summary_writer.flush()
 
         if profiling:

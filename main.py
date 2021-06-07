@@ -5,7 +5,7 @@ import tensorflow as tf
 from SGAN.discriminator import create_discriminator_models
 from SGAN.gan import create_gan_model
 from SGAN.generator import create_generator_model
-from SGAN.train import train
+from SGAN.train import start_training
 from Utils import datasets
 from SGAN import train
 from configs import configure
@@ -62,14 +62,16 @@ with strategy.scope():
     discriminator_model, classifier_model = create_discriminator_models(input_shape, no_of_classes)
     gan_model = create_gan_model(generator_model, discriminator_model)
 
-    train(generator=generator_model,
-          discriminator=discriminator_model,
-          classifier=classifier_model,
-          gan=gan_model,
-          batch_size=batch_size,
-          unsupervised_ds=unsupervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(
-              prefetch_no),
-          supervised_ds=supervised_ds.map(normalize_image, num_parallel_calls=multiprocessing.cpu_count()).prefetch(
-              prefetch_no),
-          epochs=epochs,
-          latent_dim=latent_dim)
+    start_training(generator=generator_model,
+                   discriminator=discriminator_model,
+                   classifier=classifier_model,
+                   gan=gan_model,
+                   batch_size=batch_size,
+                   unsupervised_ds=unsupervised_ds.map(normalize_image,
+                                                       num_parallel_calls=multiprocessing.cpu_count()).prefetch(
+                       prefetch_no),
+                   supervised_ds=supervised_ds.map(normalize_image,
+                                                   num_parallel_calls=multiprocessing.cpu_count()).prefetch(
+                       prefetch_no),
+                   epochs=epochs,
+                   latent_dim=latent_dim)
