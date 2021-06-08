@@ -74,7 +74,10 @@ for arg in sys.argv:
         unsuper_batches = int(param)
     if arg.lower().__contains__("eager"):
         param = arg[arg.index("=") + 1:]
-        eager_execution = bool(param)
+        if param.lower().__contains__("false"):
+            eager_execution = False
+        else:
+            eager_execution = True
 
 print(user)
 print(environment)
