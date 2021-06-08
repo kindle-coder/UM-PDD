@@ -119,13 +119,12 @@ if accelerator == Accelerator.TPU and \
 
 if environment == Environment.GoogleColab and accelerator == Accelerator.GPU:
     strategy = tf.distribute.OneDeviceStrategy(device="/gpu:0")
-
-if environment == Environment.GoogleColab:
     datasets.dataset_path = '/content/drive/MyDrive/Share/UM-PDD/dataset/'
     train.result_path = '/content/drive/MyDrive/Share/UM-PDD/results/'
 
-if accelerator == Accelerator.TPU:
-    batch_size = 256
+if environment == Environment.GoogleColab and accelerator == Accelerator.TPU:
+    datasets.dataset_path = '/content/dataset/'
+    train.result_path = '/content/results/'
 
 unsupervised_ds, supervised_ds, test_ds = get_plant_diseases_dataset(batch_size, supervised_samples_ratio)
 
