@@ -31,6 +31,7 @@ super_batches = 1
 unsuper_batches = 1
 prefetch_no = tf.data.AUTOTUNE
 eager_execution = True
+model_summery = False
 
 # Parsing Arguments
 for arg in sys.argv:
@@ -78,6 +79,12 @@ for arg in sys.argv:
             eager_execution = False
         else:
             eager_execution = True
+    if arg.lower().__contains__("model_sum"):
+        param = arg[arg.index("=") + 1:]
+        if param.lower().__contains__("false"):
+            model_summery = False
+        else:
+            model_summery = True
 
 print(user)
 print(environment)
@@ -89,6 +96,7 @@ print("Save Interval: ", save_interval)
 print("Supervised Batches per Interval: ", super_batches)
 print("Unsupervised Batches per Interval: ", unsuper_batches)
 print("Eager Execution: ", eager_execution)
+print("Print Model Sumemry: ", model_summery)
 
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
@@ -136,7 +144,15 @@ with strategy.scope():
     discriminator_model, classifier_model = create_discriminator_models(input_shape, no_of_classes)
     gan_model = create_gan_model(generator_model, discriminator_model)
 
-    classifier_model.summary()
+    if model_summery:
+        print("Classifier Summery:")
+        classifier_model.summary()
+        print("Discriminator Summery:")
+        discriminator_model.summary()
+        print("Generator Summery:")
+        generator_model.summary()
+        print("GAN Summery:")
+        gan_model.summary()
 
     start_training(generator=generator_model,
                    discriminator=discriminator_model,
