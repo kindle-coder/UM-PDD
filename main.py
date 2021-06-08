@@ -30,6 +30,7 @@ save_interval = 17
 super_batches = 1
 unsuper_batches = 1
 prefetch_no = tf.data.AUTOTUNE
+eager_execution = True
 
 # Parsing Arguments
 for arg in sys.argv:
@@ -71,6 +72,9 @@ for arg in sys.argv:
     if arg.lower().__contains__("unsuper_batches"):
         param = arg[arg.index("=") + 1:]
         unsuper_batches = int(param)
+    if arg.lower().__contains__("eager"):
+        param = arg[arg.index("=") + 1:]
+        eager_execution = bool(param)
 
 print(user)
 print(environment)
@@ -81,11 +85,12 @@ print("Supervised Ratio: ", supervised_samples_ratio)
 print("Save Interval: ", save_interval)
 print("Supervised Batches per Interval: ", super_batches)
 print("Unsupervised Batches per Interval: ", unsuper_batches)
+print("Eager Execution: ", eager_execution)
 
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
           print_device_placement=False,
-          enable_eager_execution=True)
+          enable_eager_execution=eager_execution)
 
 strategy = tf.distribute.get_strategy()
 
