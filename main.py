@@ -21,7 +21,7 @@ user = User.Arash
 environment = Environment.GoogleColab
 accelerator = Accelerator.GPU
 
-batch_size = 16
+batch_size = 64
 latent_dim = 100
 epochs = 10
 supervised_samples_ratio = 0.05
