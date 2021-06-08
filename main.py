@@ -96,7 +96,7 @@ print("Save Interval: ", save_interval)
 print("Supervised Batches per Interval: ", super_batches)
 print("Unsupervised Batches per Interval: ", unsuper_batches)
 print("Eager Execution: ", eager_execution)
-print("Print Model Sumemry: ", model_summery)
+print("Print Model Summery: ", model_summery)
 
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
