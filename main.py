@@ -1,5 +1,6 @@
 import os
 import sys
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import multiprocessing
@@ -25,6 +26,9 @@ batch_size = 64
 latent_dim = 100
 epochs = 10
 supervised_samples_ratio = 0.05
+save_interval = 17
+super_batches = 1
+unsuper_batches = 1
 prefetch_no = tf.data.AUTOTUNE
 
 # Parsing Arguments
@@ -58,6 +62,15 @@ for arg in sys.argv:
     if arg.lower().__contains__("sample_ratio"):
         param = arg[arg.index("=") + 1:]
         supervised_samples_ratio = float(param)
+    if arg.lower().__contains__("save_interval"):
+        param = arg[arg.index("=") + 1:]
+        save_interval = int(param)
+    if arg.lower().__contains__("super_batches"):
+        param = arg[arg.index("=") + 1:]
+        super_batches = int(param)
+    if arg.lower().__contains__("unsuper_batches"):
+        param = arg[arg.index("=") + 1:]
+        unsuper_batches = int(param)
 
 print(user)
 print(environment)
@@ -65,7 +78,9 @@ print(accelerator)
 print("Batch Size: ", batch_size)
 print("Epochs: ", epochs)
 print("Supervised Ratio: ", supervised_samples_ratio)
-
+print("Save Interval: ", save_interval)
+print("Supervised Batches per Interval: ", super_batches)
+print("Unsupervised Batches per Interval: ", unsuper_batches)
 
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
@@ -101,6 +116,13 @@ unsupervised_ds, supervised_ds, test_ds = get_plant_diseases_dataset(batch_size,
 input_shape = unsupervised_ds.element_spec[0].shape[1:]
 no_of_classes = len(unsupervised_ds.class_names)
 
+unsupervised_ds = unsupervised_ds.map(normalize_image,
+                                      num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no)
+supervised_ds = supervised_ds.map(normalize_image,
+                                  num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no)
+test_ds = test_ds.map(normalize_image,
+                      num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no)
+
 with strategy.scope():
     generator_model = create_generator_model(latent_dim)
     discriminator_model, classifier_model = create_discriminator_models(input_shape, no_of_classes)
@@ -113,20 +135,11 @@ with strategy.scope():
                    classifier=classifier_model,
                    gan=gan_model,
                    batch_size=batch_size,
-                   unsupervised_ds=
-                   unsupervised_ds.map(normalize_image,
-                                       num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
-                   supervised_ds=
-                   supervised_ds.map(normalize_image,
-                                     num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
-                   test_ds=
-                   test_ds.map(normalize_image,
-                               num_parallel_calls=multiprocessing.cpu_count()).prefetch(prefetch_no),
+                   unsupervised_ds=unsupervised_ds,
+                   supervised_ds=supervised_ds,
+                   test_ds=test_ds,
                    epochs=epochs,
                    latent_dim=latent_dim,
-                   supervised_batches_per_iteration=1,
-                   unsupervised_batches_per_iteration=1,
-                   save_interval=50)
-
-
-
+                   supervised_batches_per_iteration=super_batches,
+                   unsupervised_batches_per_iteration=unsuper_batches,
+                   save_interval=save_interval)
