@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow import ones
 from tqdm import tqdm
 
+import configs
 from Utils.fake_samples import generate_fake_samples, generate_latent_points, save_generated_images
 
 profiling = False
@@ -82,8 +83,8 @@ def start_training(generator,
     discriminator_fake_loss = 0.0
 
     previous_steps = i * steps + j
-    supervised_ds = supervised_ds.skip(previous_steps * supervised_batches_per_iteration)
-    unsupervised_ds = unsupervised_ds.skip(previous_steps * unsupervised_batches_per_iteration)
+    supervised_ds = supervised_ds.skip(previous_steps * supervised_batches_per_iteration).prefetch(configs.prefetch_no)
+    unsupervised_ds = unsupervised_ds.skip(previous_steps * unsupervised_batches_per_iteration).prefetch(configs.prefetch_no)
 
     for i in range(epochs)[i:]:
         if profiling:
