@@ -13,7 +13,7 @@ from tensorflow.keras.layers import Activation
 from tensorflow.python.keras import backend
 from tensorflow.keras.layers import BatchNormalization
 
-learning_rate = 0.00002
+learning_rate = 0.00002*4
 
 
 # Source: https://arxiv.org/abs/1606.03498

@@ -33,6 +33,7 @@ print("Unsupervised Batches per Interval: ", configs.unsuper_batches)
 print("Eager Execution: ", configs.eager_execution)
 print("Print Model Summery: ", configs.model_summery)
 
+
 # Configuring TensorFlow
 configure(enable_mixed_float16=False,
           print_device_placement=False,
@@ -60,6 +61,7 @@ if configs.environment == Environment.GoogleColab and configs.accelerator == Acc
 if configs.environment == Environment.GoogleColab and configs.accelerator == Accelerator.TPU:
     datasets.dataset_path = '/content/dataset/'
     train.result_path = '/content/results/'
+
 
 unsupervised_ds, supervised_ds, test_ds = get_plant_diseases_dataset(configs.batch_size, configs.supervised_samples_ratio)
 

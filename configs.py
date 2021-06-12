@@ -1,3 +1,4 @@
+import json
 import sys
 
 import tensorflow as tf
@@ -22,6 +23,7 @@ unsuper_batches = 1
 prefetch_no = tf.data.AUTOTUNE
 eager_execution = True
 model_summery = False
+resume_training = False
 
 
 def parse_args():
